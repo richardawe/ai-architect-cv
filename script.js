@@ -90,6 +90,17 @@ if (heroName) {
   heroName.style.borderRight = 'none';
 }
 
+/* ── Professional Background accordion ───────────────────────────────────── */
+const bgToggle = document.querySelector('.bg-toggle');
+if (bgToggle) {
+  bgToggle.addEventListener('click', () => {
+    const isOpen = bgToggle.getAttribute('aria-expanded') === 'true';
+    bgToggle.setAttribute('aria-expanded', String(!isOpen));
+    bgToggle.nextElementSibling.classList.toggle('open', !isOpen);
+    bgToggle.querySelector('span').textContent = isOpen ? 'Show employment history' : 'Hide employment history';
+  });
+}
+
 /* ── Smooth stagger for hero elements ────────────────────────────────────── */
 document.querySelectorAll('#hero .reveal').forEach((el, i) => {
   el.style.transitionDelay = `${i * 0.12}s`;
