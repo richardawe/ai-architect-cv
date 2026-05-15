@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Richard Awe — AI Architect</title>
+  <meta name="description" content="AI Architect & Full-Stack Engineer. Founder of 3d7 Technologies. Specialising in multi-agent AI, GitHub Actions orchestration, RAG, and production AI systems." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <div class="nav-inner">
+      <span class="nav-logo">RA<span class="dot">.</span></span>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#earlier">Earlier Work</a></li>
+        <li><a href="#stack">Stack</a></li>
+        <li><a href="https://github.com/richardawe" target="_blank" class="nav-cta">GitHub ↗</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg">
+      <div class="grid-lines"></div>
+      <div class="glow glow-1"></div>
+      <div class="glow glow-2"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge reveal">AI Architect &amp; Full-Stack Engineer</div>
+      <h1 class="hero-name reveal">Richard<br/><span class="accent">Awe</span></h1>
+      <p class="hero-sub reveal">Founder, <strong>3d7 Technologies</strong> — building production AI systems with multi-agent orchestration, GitHub Actions pipelines, RAG, and Jamstack AI data products.</p>
+      <div class="hero-links reveal">
+        <a href="mailto:richard3d7@gmail.com" class="btn btn-primary">richard3d7@gmail.com</a>
+        <a href="https://github.com/richardawe" target="_blank" class="btn btn-outline">GitHub ↗</a>
+      </div>
+      <div class="hero-tags reveal">
+        <span>Multi-Agent AI</span><span>GitHub Actions Orchestration</span><span>RAG Systems</span>
+        <span>LLM Integration</span><span>Jamstack AI</span><span>Browser-Native ML</span>
+      </div>
+    </div>
+    <div class="scroll-hint">scroll ↓</div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="section-label reveal">Profile</div>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <h2>Building intelligent systems<br/>end to end</h2>
+          <p>Richard Awe designs, builds, and deploys AI-powered systems across legal-tech, political intelligence, energy trading, browser-native ML, humanitarian response, edtech, and media. He specialises in turning complex domain problems into production-grade intelligent systems — with CI/CD from day one.</p>
+          <p>His signature approach: <strong>hybrid deterministic/LLM architectures</strong> where code handles correctness-critical decisions and AI handles language, extraction, and generation. Every project ships with GitHub Actions pipelines, not just working demos.</p>
+        </div>
+        <div class="skills-cloud reveal">
+          <div class="skill-item" style="--d:0">Multi-Agent Architecture</div>
+          <div class="skill-item" style="--d:1">GitHub Actions Orchestration</div>
+          <div class="skill-item" style="--d:2">RAG Pipelines</div>
+          <div class="skill-item" style="--d:3">OpenAI / Claude / OpenRouter</div>
+          <div class="skill-item" style="--d:4">Event-Driven State Machines</div>
+          <div class="skill-item" style="--d:5">Transformers.js / Browser ML</div>
+          <div class="skill-item" style="--d:6">Jamstack AI Data Products</div>
+          <div class="skill-item" style="--d:7">Vector Databases</div>
+          <div class="skill-item" style="--d:8">Python · TypeScript · PHP</div>
+          <div class="skill-item" style="--d:9">React · Next.js · Laravel</div>
+          <div class="skill-item" style="--d:10">CI/CD · FTP Deploy · cPanel</div>
+          <div class="skill-item" style="--d:11">Prompt Engineering</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECENT PROJECTS -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-label reveal">Recent Work</div>
+      <h2 class="section-title reveal">AI Projects <span class="accent">2025 – 2026</span></h2>
+
+      <!-- EU261 -->
+      <article class="project-card reveal" data-color="#3B82F6">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-tag">Legal-Tech · Agentic</span>
+            <span class="project-status status-live">Phase 1 Live</span>
+          </div>
+          <h3>EU261 Auto-Claim Agent</h3>
+          <p class="project-role">Lead AI Architect &amp; Developer</p>
+          <p class="project-desc">Agentic system that autonomously files EU Regulation 261/2004 flight delay and cancellation compensation claims — intake, eligibility evaluation, demand letter generation, airline submission, and National Enforcement Body escalation, all orchestrated via GitHub Actions.</p>
+          <div class="project-links">
+            <a href="https://github.com/richardawe/Eu261" target="_blank" class="pill-link">GitHub ↗</a>
+          </div>
+        </div>
+        <button class="arch-toggle" aria-expanded="false">
+          <span class="arch-toggle-label">Architectural Considerations</span>
+          <svg class="arch-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="arch-body">
+          <ul class="arch-list">
+            <li><strong>GitHub Actions as distributed state machine</strong> — 11 discrete event-driven workflows (intake, eligibility, draft, submit, escalate…) each firing on GitHub Issue label transitions: <code>claim → state:intake-complete → state:eligibility-passed → state:draft-ready → submitted</code>. No external queue or database needed.</li>
+            <li><strong>Hybrid AI/rules architecture</strong> — <code>engine/eligibility.py</code> is a deterministic Python rules engine reading versioned YAML thresholds from <code>rules/</code>. The LLM (<code>engine/extractor.py</code>) is used only for structured fact extraction from free-text narratives — never for legal decisions.</li>
+            <li><strong>libsodium PII encryption</strong> — <code>engine/crypto.py</code> rewrites PII out of the public Issue body during intake; <code>NACL_PUBLIC_KEY</code> stored as a GitHub repo variable.</li>
+            <li><strong>PAT workaround pattern</strong> — <code>intake.yml</code> uses <code>CLAIM_CREATION_TOKEN</code> (a PAT) rather than <code>GITHUB_TOKEN</code> when adding <code>state:intake-complete</code>, because GitHub silences label events triggered by the default token, which would break the downstream eligibility workflow trigger.</li>
+            <li><strong>Pluggable adapter architecture</strong> — <code>adapters/</code> holds per-airline YAML configs; <code>adapters_runtime/</code> implements Playwright (web-form), SMTP, and HTTP runtimes, decoupled from the engine.</li>
+            <li><strong>JWT consent tokens</strong> gate the JSON API (<code>api/</code>) for agent-to-agent callers; OpenAPI spec documented in <code>docs/agent-api.md</code>. Full pytest suite covers engine and workflows_lib.</li>
+          </ul>
+          <div class="arch-stack">Python 3.12 · GitHub Actions (11 workflows) · YAML rules engine · libsodium · JWT · Playwright · pytest</div>
+        </div>
+      </article>
+
+      <!-- UK Politics -->
+      <article class="project-card reveal" data-color="#8B5CF6">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-tag">Political Intelligence · Cron Pipeline</span>
+            <span class="project-status status-live">Live — 6h updates</span>
+          </div>
+          <h3>UK Politics AI Positioning Matrix</h3>
+          <p class="project-role">Lead AI Architect &amp; Developer</p>
+          <p class="project-desc">Live political intelligence dashboard monitoring UK news and mapping party ideological positions onto a dynamic 2×2 political compass (left/right × authoritarian/libertarian). Tracks 6 major parties with weekly movement indicators, trend charts, and AI commentary. Deployed as a static Next.js site on GitHub Pages updated autonomously every 6 hours.</p>
+          <div class="project-links">
+            <a href="https://github.com/richardawe/Eu261/tree/main/ukpolitics" target="_blank" class="pill-link">GitHub ↗</a>
+          </div>
+        </div>
+        <button class="arch-toggle" aria-expanded="false">
+          <span class="arch-toggle-label">Architectural Considerations</span>
+          <svg class="arch-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="arch-body">
+          <ul class="arch-list">
+            <li><strong>Scheduled cron pipeline</strong> — GitHub Actions cron every 6 hours runs: <code>fetchNews → extractSignals → calculatePositions → generateCommentary → saveSnapshots → commit → deploy Pages</code>. Concurrency group <code>pages</code> prevents race-condition half-deploys.</li>
+            <li><strong>Multi-provider AI abstraction</strong> — <code>lib/ai/index.ts</code> <code>getAIProvider()</code> resolves to OpenRouter, OpenAI, or Anthropic at runtime from env vars. All three adapters share the same prompts, making the LLM entirely swappable with no code changes.</li>
+            <li><strong>Credibility-weighted signal scoring</strong> — <code>SOURCE_WEIGHTS</code> rank sources from <code>official_speech=1.0</code> and <code>hansard=0.95</code> down to <code>social_media=0.2</code>. <code>SIGNAL_TYPE_MULTIPLIERS</code> weight <code>legislation=1.0</code> vs <code>rhetoric=0.5</code> vs <code>signalling=0.4</code>. <code>POLICY_AXIS_WEIGHTS</code> split each policy area into social vs economic impact.</li>
+            <li><strong>Baseline anchoring &amp; reversion</strong> — party positions are anchored to 2024 general election manifesto baselines; <code>REVERSION_RATE=0.05</code> per update cycle prevents drift from ephemeral news. A single-day movement cap blocks implausible position jumps.</li>
+            <li><strong>Cold-start seeding</strong> — <code>generateHistory.ts</code> bootstraps 30 days of synthetic history on first deploy, giving the timeline chart meaningful data without live API calls.</li>
+            <li><strong>Fully static output</strong> — Next.js App Router exported to GitHub Pages; data served as committed JSON snapshots; no server, no database, zero hosting cost.</li>
+          </ul>
+          <div class="arch-stack">Next.js (App Router) · TypeScript · React · Recharts · Tailwind CSS · OpenRouter/OpenAI/Anthropic adapters · GitHub Pages</div>
+        </div>
+      </article>
+
+      <!-- EV Showcase -->
+      <article class="project-card reveal" data-color="#10B981">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-tag">Jamstack AI · Daily Pipeline</span>
+            <span class="project-status status-live">Live — daily updates</span>
+          </div>
+          <h3>EV Showcase — Electric Vehicles of the World</h3>
+          <p class="project-role">Lead Developer</p>
+          <p class="project-desc">Comprehensive, searchable showcase of every electric vehicle globally — cars, trucks, motorcycles, buses — with specs, range, battery, and pricing. Database grown autonomously: a daily GitHub Actions cron adds newly confirmed EV models via LLM and fills vehicle photos from Wikipedia and Wikimedia Commons.</p>
+          <div class="project-links">
+            <a href="https://github.com/richardawe/Electric-vehicles" target="_blank" class="pill-link">GitHub ↗</a>
+          </div>
+        </div>
+        <button class="arch-toggle" aria-expanded="false">
+          <span class="arch-toggle-label">Architectural Considerations</span>
+          <svg class="arch-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="arch-body">
+          <ul class="arch-list">
+            <li><strong>Two-job GitHub Actions workflow</strong> — Job 1 (update-data) runs the Python pipeline and commits <code>vehicles.json</code> only if changes exist via <code>changed=true/false</code> output gating, preventing spurious commits. Job 2 (deploy) always runs after and deploys via OIDC.</li>
+            <li><strong>LLM as structured data source</strong> — <code>update_vehicles.py</code> calls <code>openai/gpt-oss-120b:free</code> via OpenRouter with the full existing vehicle list as context; the model identifies up to 10 new confirmed EVs per run and returns typed JSON.</li>
+            <li><strong>Chain-of-thought stripping</strong> — <code>extract_json()</code> removes <code>&lt;think&gt;/&lt;reasoning&gt;/&lt;thought&gt;</code> tags emitted by reasoning models before JSON parsing, enabling compatibility with DeepSeek R1 and similar.</li>
+            <li><strong>Schema validation before commit</strong> — every LLM-returned vehicle is checked for required fields, valid type enum, positive numeric specs, and year in 2010–2030. Invalid entries are logged and rejected without halting the pipeline.</li>
+            <li><strong>Three-tier Wikipedia image pipeline</strong> — <code>ARTICLE_MAP</code> maps vehicle IDs to exact Wikipedia article titles; fallback 1: Wikipedia article search; fallback 2: Wikimedia Commons file-namespace search with make/model scoring. SVGs, logos, and non-free files are rejected.</li>
+            <li><strong>Jamstack architecture</strong> — pure static HTML/CSS/JS reads <code>vehicles.json</code> at load time; no runtime server, no browser API calls, near-zero hosting cost.</li>
+          </ul>
+          <div class="arch-stack">Python 3.12 · OpenRouter (gpt-oss-120b:free) · Wikipedia/Wikimedia APIs · GitHub Actions (daily cron) · Static HTML/CSS/JS · GitHub Pages</div>
+        </div>
+      </article>
+
+      <!-- Brand Reel -->
+      <article class="project-card reveal" data-color="#F59E0B">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-tag">Browser-Native · Video Generation</span>
+            <span class="project-status status-live">Live</span>
+          </div>
+          <h3>Brand Reel — Webpage to Brand Video</h3>
+          <p class="project-role">Lead Developer</p>
+          <p class="project-desc">Browser-native tool that takes any webpage (HTML upload or screenshot) and generates a polished 10-second brand video entirely client-side — no server, no upload, no API key. Automatically detects page sections, extracts brand accent colour from computed CSS, captures scroll-position screenshots, and renders an animated video.</p>
+          <div class="project-links">
+            <a href="https://richardawe.github.io/agents/" target="_blank" class="pill-link">Live Site ↗</a>
+            <a href="https://github.com/richardawe/agents" target="_blank" class="pill-link">GitHub ↗</a>
+          </div>
+        </div>
+        <button class="arch-toggle" aria-expanded="false">
+          <span class="arch-toggle-label">Architectural Considerations</span>
+          <svg class="arch-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="arch-body">
+          <ul class="arch-list">
+            <li><strong>Scene composition engine</strong> — <code>BrandVideo.tsx</code> uses Remotion <code>AbsoluteFill + Sequence</code> primitives for a typed, frame-accurate composition: Intro (90 frames/3s) → Feature scenes (150 frames/5s each, up to 5) → Outro (90 frames/3s). Timing constants in <code>types.ts</code> are shared between the Remotion preview and the canvas exporter.</li>
+            <li><strong>Client-side page analysis</strong> — HTML file loaded into a hidden 1280×720 iframe; 13 semantic CSS class selectors (<code>[class*=hero]</code>, <code>[class*=feature]</code>, <code>[class*=pricing]</code>, etc.) detect sections with 100px-bucket deduplication and Y-interval fallback when fewer than 2 sections are found.</li>
+            <li><strong>Accent colour extraction</strong> — inspects <code>getComputedStyle</code> on buttons/CTAs/links, rejects near-white (R/G/B &gt;235) and near-black (&lt;20), returns the first valid hex. Falls back to <code>#6366f1</code>.</li>
+            <li><strong>Canvas 2D frame renderer</strong> — custom <code>remap()</code> + easing functions (<code>easeOut</code>, <code>easeSine</code>, <code>easeInOut</code>) replicate CSS animation easing in canvas math: opacity fades, Ken Burns zoom, text slide-in, animated accent bars, progress dot indicators.</li>
+            <li><strong>MediaRecorder video encoding</strong> — <code>canvas.captureStream(30fps)</code> feeds MediaRecorder at 8 Mbps; codec preference is VP9 (<code>video/webm;codecs=vp9</code>), falling back to generic WebM. Frames committed at real-time pace to keep the stream clock accurate.</li>
+            <li><strong>Dual render paths</strong> — Remotion for in-browser preview with scrubbing; Canvas 2D + MediaRecorder for the downloadable <code>.webm</code>, decoupling preview quality from export fidelity.</li>
+            <li><strong>GitHub Actions deploy</strong> — Vite build in <code>remotion-brand-video/</code>, OIDC deploy to Pages (<code>id-token: write</code>) — no secrets required.</li>
+          </ul>
+          <div class="arch-stack">React · TypeScript · Vite · Remotion · html2canvas · Canvas 2D API · MediaRecorder API (WebM/VP9) · Tailwind CSS · GitHub Pages</div>
+        </div>
+      </article>
+
+      <!-- BrowserML -->
+      <article class="project-card reveal" data-color="#EC4899">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-tag">Browser-Native ML · Zero Server</span>
+            <span class="project-status status-live">Live</span>
+          </div>
+          <h3>BrowserML — Client-Side AI Task Runner</h3>
+          <p class="project-role">Lead Developer</p>
+          <p class="project-desc">Browser-native AI task runner for text summarisation, creative writing, extractive Q&amp;A, and multi-language translation — running 100% client-side. No server, no API key, no data sent anywhere. Models downloaded once and cached in the browser.</p>
+          <div class="project-links">
+            <a href="https://github.com/richardawe/3dpages" target="_blank" class="pill-link">GitHub ↗</a>
+          </div>
+        </div>
+        <button class="arch-toggle" aria-expanded="false">
+          <span class="arch-toggle-label">Architectural Considerations</span>
+          <svg class="arch-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="arch-body">
+          <ul class="arch-list">
+            <li><strong>Web Worker isolation</strong> — all Transformers.js inference runs in a dedicated worker thread via <code>postMessage/addEventListener</code>, keeping the main UI thread fully responsive. Progress events are streamed back to drive a live progress bar.</li>
+            <li><strong>Transformers.js model roster</strong> — <code>distilbart-cnn-6-6</code> (summarisation), <code>gpt2</code> (text generation), <code>distilbert-base-uncased-distilled-squad</code> (extractive QA); translation uses <code>opus-mt-{lang-pair}</code> loaded dynamically by language pair.</li>
+            <li><strong>Browser model cache</strong> — <code>env.useBrowserCache=true</code> stores model weights (85–300 MB) in the browser's Cache API after first download for instant reuse on repeat visits.</li>
+            <li><strong>Pipe reuse pattern</strong> — <code>getPipe()</code> caches initialised pipeline instances in a <code>pipes{}</code> object keyed by task/model name, avoiding redundant reinitialisation within a session.</li>
+            <li><strong>Request ID correlation</strong> — each worker message carries an <code>id</code> generated by the caller, allowing the UI to match async responses to the correct pending request and discard stale results.</li>
+            <li><strong>Zero-server architecture</strong> — three files (<code>index.html</code>, <code>app.js</code>, <code>worker.js</code>) on GitHub Pages; no backend, no auth, no data egress.</li>
+          </ul>
+          <div class="arch-stack">Vanilla JavaScript · Transformers.js v2.17.2 · Web Workers API · Tailwind CSS (CDN) · GitHub Pages</div>
+        </div>
+      </article>
+
+      <!-- EnergyTRM -->
+      <article class="project-card reveal" data-color="#F97316">
+        <div class="project-header">
+          <div class="project-meta">
+            <span class="project-tag">Energy Trading · Full CI/CD</span>
+            <span class="project-status status-live">In Production</span>
+          </div>
+          <h3>EnergyTRM — Energy Trading &amp; Risk Management</h3>
+          <p class="project-role">Lead Developer</p>
+          <p class="project-desc">Full-featured ETRM training portal simulating a system like Endur — deal capture, validation, logistics, invoicing, settlement, risk monitoring (VaR, stress tests). Covers physical trades, OTC financial instruments (swaps, futures, options), and counterparty management across 7 complete phases.</p>
+          <div class="project-links">
+            <a href="https://energytrm.com" target="_blank" class="pill-link">energytrm.com ↗</a>
+            <a href="https://github.com/richardawe/energytrm" target="_blank" class="pill-link">GitHub ↗</a>
+          </div>
+        </div>
+        <button class="arch-toggle" aria-expanded="false">
+          <span class="arch-toggle-label">Architectural Considerations</span>
+          <svg class="arch-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="arch-body">
+          <ul class="arch-list">
+            <li><strong>Two-stage GitHub Actions CI/CD</strong> — <code>ci.yml</code> spins up a MySQL 8.0 service container and runs <code>php artisan migrate + php artisan test</code> (PHP 8.4 + Laravel 13) on every PR and develop push. <code>deploy.yml</code> triggers on main, builds frontend assets, and deploys via FTP to cPanel production.</li>
+            <li><strong>Single-table inheritance for financial instruments</strong> — <code>financial_trades</code> covers swaps, futures, and options via an <code>instrument_type</code> enum; instrument-specific columns (<code>fixed_rate</code>, <code>strike_price</code>, <code>num_contracts</code>, etc.) are nullable, populated only for the relevant instrument type.</li>
+            <li><strong>Three-ID trade identity pattern</strong> — Deal Number (permanent, per instrument), Transaction Number (changes on amendment, shared UNION sequence across <code>trades</code> + <code>financial_trades</code>), and Instrument Number (shared across linked OTC duplicates).</li>
+            <li><strong>State machine per instrument class</strong> — physical trades: Pending → Validated → Active → Settled/Closed; futures/options: Pending → Validated → Open → Expired/Exercised/Closed. <code>TERMINAL_STATUSES</code> blocks edits on closed positions.</li>
+            <li><strong>Module-namespaced controller architecture</strong> — <code>Master\*</code>, <code>Trades\*</code>, <code>Operations\*</code>, <code>Financials\*</code>, <code>Risk\*</code>, <code>Admin\*</code> namespaces. Static paths (<code>/create</code>, <code>/edit</code>) registered before wildcard <code>{model}</code> routes to prevent shadowing.</li>
+            <li><strong>Environment isolation</strong> — <code>.env</code> never committed; production secrets uploaded directly to cPanel. CI uses <code>.env.testing</code> with GitHub Actions service container credentials. cPanel cron runs <code>php artisan schedule:run</code> every minute for daily EoB/CoB checklist resets.</li>
+          </ul>
+          <div class="arch-stack">Laravel 13 · PHP 8.4 · MySQL 8.0 · Alpine.js · Bootstrap 5 · Vite · GitHub Actions (CI + FTP deploy) · cPanel</div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- EARLIER PROJECTS -->
+  <section id="earlier">
+    <div class="container">
+      <div class="section-label reveal">Prior Work</div>
+      <h2 class="section-title reveal">Earlier AI Projects</h2>
+      <div class="earlier-grid">
+
+        <div class="earlier-card reveal">
+          <div class="earlier-card-top">
+            <h4>AI Metrics Intelligence Platform</h4>
+            <span class="earlier-role">Lead AI Architect</span>
+          </div>
+          <p>Enterprise AI diagnostic platform assessing organisational AI maturity and auto-generating custom success metrics — questionnaire-driven profiling, data gap analysis, and a real-time analytics cockpit.</p>
+          <div class="earlier-stack">React · Python/Flask · LLM orchestration · SQL + vector storage</div>
+        </div>
+
+        <div class="earlier-card reveal">
+          <div class="earlier-card-top">
+            <h4>AI Agent Workflow System</h4>
+            <span class="earlier-role">Lead Developer</span>
+          </div>
+          <p>Python multi-agent orchestration framework: 5-step collaborative pipeline (Plan → Research → Execute → QA → Refine). Model-agnostic via OpenRouter; Flask web UI + CLI with structured JSON output.</p>
+          <div class="earlier-stack">Python · Flask · OpenRouter API</div>
+          <a href="https://github.com/richardawe/testing-agents" target="_blank" class="earlier-link">GitHub ↗</a>
+        </div>
+
+        <div class="earlier-card reveal">
+          <div class="earlier-card-top">
+            <h4>Intelligent Email Assistant</h4>
+            <span class="earlier-role">Lead AI Developer</span>
+          </div>
+          <p>Multi-agent email system with Gmail OAuth 2.0, RAG pipeline retrieving context from email history, AI-driven composition, and human-in-the-loop approval before sending.</p>
+          <div class="earlier-stack">Python · Flask · OpenRouter · Gmail API · ChromaDB · RAG</div>
+          <a href="https://github.com/richardawe/intelligent-email-assistant" target="_blank" class="earlier-link">GitHub ↗</a>
+        </div>
+
+        <div class="earlier-card reveal">
+          <div class="earlier-card-top">
+            <h4>DataRadar — Document Intelligence</h4>
+            <span class="earlier-role">AI Architect &amp; Developer</span>
+          </div>
+          <p>Intelligent document management that auto-routes uploads to SQL (structured) or vector DB (unstructured). Supports Excel, PDF, images (OCR), Word, and plain text with natural language querying.</p>
+          <div class="earlier-stack">Python · Node.js · Tesseract OCR · ChromaDB · PostgreSQL</div>
+        </div>
+
+        <div class="earlier-card reveal">
+          <div class="earlier-card-top">
+            <h4>Humanitarian Intelligence Platform</h4>
+            <span class="earlier-role">Lead Developer</span>
+          </div>
+          <p>Real-time crisis intelligence platform for Nigeria: state-level vulnerability indicators, AI-driven aid allocation optimisation, and live geospatial dashboards.</p>
+          <div class="earlier-stack">Node.js · React · REST APIs · Geospatial data</div>
+          <a href="https://github.com/richardawe/Humanitarian-Intelligence-Platform-Nigeria" target="_blank" class="earlier-link">GitHub ↗</a>
+        </div>
+
+        <div class="earlier-card reveal">
+          <div class="earlier-card-top">
+            <h4>Kidemia — AI Learning Platform</h4>
+            <span class="earlier-role">Lead Developer</span>
+          </div>
+          <p>Interactive AI education platform for children with personalised tests, adaptive learning paths, and detailed subject progress tracking.</p>
+          <div class="earlier-stack">React · Node.js · AI personalisation engine</div>
+          <a href="https://github.com/richardawe/kidemia-quest-learn" target="_blank" class="earlier-link">GitHub ↗</a>
+        </div>
+
+        <div class="earlier-card reveal">
+          <div class="earlier-card-top">
+            <h4>RegAlertPro — Regulatory Compliance</h4>
+            <span class="earlier-role">AI Product Architect</span>
+          </div>
+          <p>AI-powered regulatory alert SaaS: real-time Federal Register pipeline, LLM relevance scoring, automated email alerting; $499/month subscription tier for compliance officers.</p>
+          <div class="earlier-stack">Laravel · React · Federal Register API · LLM classification</div>
+        </div>
+
+        <div class="earlier-card reveal">
+          <div class="earlier-card-top">
+            <h4>DocumentHelp.ai</h4>
+            <span class="earlier-role">Co-developer</span>
+          </div>
+          <p>AI business document assistant generating goal-aligned documents rapidly. Live at documenthelp-ai.vercel.app.</p>
+          <div class="earlier-stack">React/Vite · Node.js · OpenAI API</div>
+          <a href="https://github.com/DaScOrPiO/documenthelp.ai" target="_blank" class="earlier-link">GitHub ↗</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section id="stack">
+    <div class="container">
+      <div class="section-label reveal">Tooling</div>
+      <h2 class="section-title reveal">Technology Stack</h2>
+      <div class="stack-grid reveal">
+        <div class="stack-row">
+          <div class="stack-cat">AI / LLM</div>
+          <div class="stack-items">
+            <span>OpenAI GPT-4</span><span>Claude (Anthropic)</span><span>OpenRouter</span>
+            <span>LangChain</span><span>Transformers.js</span><span>gpt-oss-120b</span>
+          </div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-cat">Orchestration</div>
+          <div class="stack-items">
+            <span>GitHub Actions</span><span>Multi-agent pipelines</span><span>RAG</span>
+            <span>Event-driven state machines</span><span>Cron pipelines</span>
+          </div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-cat">Languages</div>
+          <div class="stack-items">
+            <span>Python 3.12</span><span>TypeScript</span><span>JavaScript</span><span>PHP 8.4</span>
+          </div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-cat">Frontend</div>
+          <div class="stack-items">
+            <span>React</span><span>Next.js</span><span>Vue.js</span><span>Alpine.js</span>
+            <span>Tailwind CSS</span><span>Bootstrap 5</span>
+          </div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-cat">Backend</div>
+          <div class="stack-items">
+            <span>Node.js / Express</span><span>Flask</span><span>Django</span><span>Laravel 13</span>
+          </div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-cat">Databases</div>
+          <div class="stack-items">
+            <span>MySQL 8.0</span><span>PostgreSQL</span><span>SQLite</span>
+            <span>ChromaDB</span><span>Pinecone</span>
+          </div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-cat">Deploy</div>
+          <div class="stack-items">
+            <span>GitHub Pages</span><span>Vercel</span><span>cPanel / FTP</span><span>GitHub Actions CI/CD</span>
+          </div>
+        </div>
+        <div class="stack-row">
+          <div class="stack-cat">Other</div>
+          <div class="stack-items">
+            <span>Transformers.js</span><span>Web Workers API</span><span>Remotion</span>
+            <span>MediaRecorder API</span><span>libsodium</span><span>Tesseract OCR</span>
+            <span>Gmail API</span><span>OAuth 2.0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-left">
+          <span class="nav-logo">RA<span class="dot">.</span></span>
+          <p>Richard Awe · AI Architect &amp; Full-Stack Engineer<br/>Founder, 3d7 Technologies</p>
+        </div>
+        <div class="footer-links">
+          <a href="mailto:richard3d7@gmail.com">richard3d7@gmail.com</a>
+          <a href="mailto:Richard.Awe@3d7tech.com">Richard.Awe@3d7tech.com</a>
+          <a href="https://github.com/richardawe" target="_blank">github.com/richardawe ↗</a>
+        </div>
+      </div>
+      <div class="footer-bottom">Built with care · Deployed on GitHub Pages</div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
