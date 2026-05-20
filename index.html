@@ -534,6 +534,40 @@
     </div>
   </footer>
 
+  <!-- AI CHAT WIDGET -->
+  <div class="chat-widget" id="chatWidget">
+    <div class="chat-panel" id="chatPanel" aria-label="Chat with Richard's AI assistant" aria-hidden="true">
+      <div class="chat-panel-header">
+        <div class="chat-panel-title">
+          <div class="chat-status-dot"></div>
+          <span>Richard's AI Assistant</span>
+        </div>
+        <button class="chat-close" id="chatClose" aria-label="Close chat">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg chat-msg-assistant">Hi! I'm Richard's AI assistant. Ask me anything about his skills, projects, or background — I'm here to help. 👋</div>
+        <div class="chat-suggestions" id="chatSuggestions">
+          <button class="chat-suggest">What are his main AI skills?</button>
+          <button class="chat-suggest">Tell me about the EU261 project</button>
+          <button class="chat-suggest">What's his professional background?</button>
+          <button class="chat-suggest">What makes him stand out?</button>
+        </div>
+      </div>
+      <form class="chat-form" id="chatForm">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Ask about Richard…" maxlength="500" autocomplete="off" />
+        <button type="submit" class="chat-send" id="chatSend" aria-label="Send message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </form>
+    </div>
+    <button class="chat-trigger" id="chatTrigger" aria-label="Ask about Richard">
+      <svg class="chat-trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="chat-trigger-label">Ask me anything</span>
+    </button>
+  </div>
+
   <script src="script.js"></script>
 </body>
 </html>

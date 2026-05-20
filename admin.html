@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RA. Admin — CV Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+  <style>
+    :root {
+      --bg:         #080b12;
+      --bg2:        #0d1117;
+      --bg3:        #111827;
+      --border:     rgba(255,255,255,0.07);
+      --border-hi:  rgba(255,255,255,0.14);
+      --text:       #e2e8f0;
+      --text-dim:   #8892a4;
+      --text-faint: #4b5563;
+      --accent:     #3b82f6;
+      --accent2:    #60a5fa;
+      --danger:     #ef4444;
+      --success:    #10b981;
+      --mono:       'JetBrains Mono', monospace;
+      --sans:       'Inter', sans-serif;
+      --radius:     12px;
+      --radius-lg:  18px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────────── */
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .admin-logo {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+    .admin-logo .dot { color: var(--accent); }
+    .admin-label {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      margin-left: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .header-left { display: flex; align-items: center; }
+
+    #logoutBtn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s;
+      display: none;
+    }
+    #logoutBtn:hover { border-color: var(--border-hi); color: var(--text); }
+
+    /* ── Login screen ─────────────────────────────────────────────────── */
+    #loginScreen {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .login-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .login-card h2 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+    .login-card p {
+      font-size: 0.875rem;
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .login-card label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    /* ── Dashboard ────────────────────────────────────────────────────── */
+    #dashboard {
+      display: none;
+      flex: 1;
+      flex-direction: column;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 40px 32px 64px;
+      gap: 32px;
+    }
+    #dashboard.visible { display: flex; }
+
+    .dash-intro h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      margin-bottom: 8px;
+    }
+    .dash-intro p {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .dash-intro strong { color: var(--text); }
+
+    .dash-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 800px) { .dash-columns { grid-template-columns: 1fr; } }
+
+    .panel {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .panel-head h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: rgba(59,130,246,0.12);
+      color: var(--accent2);
+      border: 1px solid rgba(59,130,246,0.2);
+    }
+
+    .panel-body { padding: 20px; }
+
+    /* ── Form elements ────────────────────────────────────────────────── */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-dim);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    textarea, input[type="password"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: none;
+    }
+    textarea { padding: 14px 16px; line-height: 1.6; }
+    textarea:focus, input[type="password"]:focus { border-color: var(--accent); }
+
+    input[type="password"] { padding: 12px 16px; }
+
+    .char-count {
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      text-align: right;
+    }
+
+    /* ── Buttons ──────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-family: var(--sans);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+    }
+    .btn-outline:hover { border-color: var(--border-hi); color: var(--text); }
+    .btn-sm { padding: 7px 14px; font-size: 0.8rem; border-radius: 8px; }
+
+    /* ── Error / status ───────────────────────────────────────────────── */
+    .error-msg {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: #fca5a5;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    /* ── CV Output panel ─────────────────────────────────────────────── */
+    .output-placeholder {
+      color: var(--text-faint);
+      font-size: 0.875rem;
+      text-align: center;
+      padding: 48px 24px;
+      line-height: 1.6;
+    }
+
+    .output-placeholder .icon {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    #cvOutput {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+    #cvOutput.visible { display: flex; }
+
+    .cv-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cv-rendered {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      overflow-y: auto;
+      max-height: 600px;
+    }
+
+    /* Markdown rendered styles */
+    .cv-rendered h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 4px; color: var(--text); }
+    .cv-rendered h2 { font-size: 1rem; font-weight: 600; color: var(--accent2); border-bottom: 1px solid var(--border); padding-bottom: 6px; margin: 20px 0 10px; }
+    .cv-rendered h3 { font-size: 0.9rem; font-weight: 600; margin: 14px 0 6px; }
+    .cv-rendered p { margin-bottom: 10px; color: var(--text-dim); }
+    .cv-rendered p:first-child { color: var(--text); }
+    .cv-rendered strong { color: var(--text); font-weight: 600; }
+    .cv-rendered ul { padding-left: 18px; margin-bottom: 10px; }
+    .cv-rendered li { margin-bottom: 4px; color: var(--text-dim); }
+    .cv-rendered hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+    /* Streaming cursor */
+    .cv-rendered.streaming::after {
+      content: '▋';
+      color: var(--accent);
+      animation: blink 0.8s step-end infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ── Toast ────────────────────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--bg3);
+      border: 1px solid var(--border-hi);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Model selector ───────────────────────────────────────────────── */
+    .model-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .model-row label { font-size: 0.78rem; color: var(--text-dim); white-space: nowrap; }
+    .model-row select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      padding: 6px 10px;
+      outline: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="admin-header">
+    <div class="header-left">
+      <span class="admin-logo">RA<span class="dot">.</span></span>
+      <span class="admin-label">Admin</span>
+    </div>
+    <button id="logoutBtn">Sign out</button>
+  </header>
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen">
+    <div class="login-card">
+      <div>
+        <h2>Admin Access</h2>
+        <p style="margin-top:8px">CV generator for Richard Awe. Paste any job description to generate a tailored, optimised CV instantly.</p>
+      </div>
+      <div class="field">
+        <label for="passwordInput">Password</label>
+        <input type="password" id="passwordInput" placeholder="Enter admin password" autocomplete="current-password" />
+      </div>
+      <div id="loginError" class="error-msg">Incorrect password. Please try again.</div>
+      <button class="btn btn-primary" id="loginBtn">Sign in</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard">
+    <div class="dash-intro">
+      <h2>CV Generator</h2>
+      <p>Paste a job description on the left. The AI will generate a <strong>tailored CV</strong> that highlights the most relevant skills, projects, and experience for that specific role — using Richard's real background.</p>
+    </div>
+
+    <div class="dash-columns">
+      <!-- Input panel -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Job Description <span class="panel-badge">Input</span></h3>
+        </div>
+        <div class="panel-body" style="display:flex;flex-direction:column;gap:16px">
+          <div class="field">
+            <label for="jobDescription">Paste the full job description</label>
+            <textarea id="jobDescription" rows="18"
+              placeholder="Paste the full job description here — title, responsibilities, requirements, company info. The more detail, the better the tailoring."></textarea>
+            <div class="char-count"><span id="charCount">0</span> / 5000 characters</div>
+          </div>
+          <div id="genError" class="error-msg"></div>
+          <div class="model-row">
+            <label for="modelSelect">Model:</label>
+            <select id="modelSelect">
+              <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (free)</option>
+              <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+              <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
+              <option value="google/gemini-flash-1.5">Gemini Flash 1.5</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="generateBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Generate CV
+          </button>
+        </div>
+      </div>
+
+      <!-- Output panel -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Generated CV <span class="panel-badge">Output</span></h3>
+        </div>
+        <div class="panel-body">
+          <div id="outputPlaceholder" class="output-placeholder">
+            <span class="icon">✦</span>
+            Your tailored CV will appear here.<br/>
+            Paste a job description and click Generate.
+          </div>
+          <div id="cvOutput">
+            <div class="cv-actions">
+              <button class="btn btn-outline btn-sm" id="copyBtn">Copy to clipboard</button>
+              <button class="btn btn-outline btn-sm" id="downloadBtn">Download .txt</button>
+            </div>
+            <div class="cv-rendered" id="cvRendered"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── State ──────────────────────────────────────────────────────────────
+    let adminToken = sessionStorage.getItem('adminToken');
+    let rawCvText = '';
+
+    // ── DOM refs ───────────────────────────────────────────────────────────
+    const loginScreen   = document.getElementById('loginScreen');
+    const dashboard     = document.getElementById('dashboard');
+    const logoutBtn     = document.getElementById('logoutBtn');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginBtn      = document.getElementById('loginBtn');
+    const loginError    = document.getElementById('loginError');
+    const jobDesc       = document.getElementById('jobDescription');
+    const charCount     = document.getElementById('charCount');
+    const generateBtn   = document.getElementById('generateBtn');
+    const genError      = document.getElementById('genError');
+    const outputPlaceholder = document.getElementById('outputPlaceholder');
+    const cvOutput      = document.getElementById('cvOutput');
+    const cvRendered    = document.getElementById('cvRendered');
+    const copyBtn       = document.getElementById('copyBtn');
+    const downloadBtn   = document.getElementById('downloadBtn');
+    const modelSelect   = document.getElementById('modelSelect');
+    const toast         = document.getElementById('toast');
+
+    // ── Init ───────────────────────────────────────────────────────────────
+    if (adminToken) showDashboard();
+
+    // ── Auth ───────────────────────────────────────────────────────────────
+    async function login() {
+      loginError.classList.remove('visible');
+      const password = passwordInput.value;
+      if (!password) return;
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = 'Signing in…';
+
+      try {
+        const res = await fetch('/api/admin/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          adminToken = data.token;
+          sessionStorage.setItem('adminToken', adminToken);
+          showDashboard();
+        } else {
+          loginError.classList.add('visible');
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      } catch {
+        loginError.textContent = 'Connection error. Is the server running?';
+        loginError.classList.add('visible');
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = 'Sign in';
+      }
+    }
+
+    function showDashboard() {
+      loginScreen.style.display = 'none';
+      dashboard.classList.add('visible');
+      logoutBtn.style.display = 'block';
+    }
+
+    async function logout() {
+      try {
+        await fetch('/api/admin/logout', {
+          method: 'POST',
+          headers: { 'X-Admin-Token': adminToken },
+        });
+      } catch {}
+      sessionStorage.removeItem('adminToken');
+      adminToken = null;
+      loginScreen.style.display = '';
+      dashboard.classList.remove('visible');
+      logoutBtn.style.display = 'none';
+      passwordInput.value = '';
+    }
+
+    loginBtn.addEventListener('click', login);
+    passwordInput.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+    logoutBtn.addEventListener('click', logout);
+
+    // ── Char counter ───────────────────────────────────────────────────────
+    jobDesc.addEventListener('input', () => {
+      charCount.textContent = jobDesc.value.length;
+    });
+
+    // ── CV Generation ──────────────────────────────────────────────────────
+    generateBtn.addEventListener('click', generateCV);
+
+    async function generateCV() {
+      const description = jobDesc.value.trim();
+      if (!description) {
+        showGenError('Please paste a job description first.');
+        return;
+      }
+      if (description.length < 50) {
+        showGenError('Job description is too short. Please paste the full description.');
+        return;
+      }
+
+      genError.classList.remove('visible');
+      generateBtn.disabled = true;
+      generateBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Generating…';
+
+      outputPlaceholder.style.display = 'none';
+      cvOutput.classList.add('visible');
+      cvRendered.innerHTML = '';
+      cvRendered.classList.add('streaming');
+      rawCvText = '';
+
+      try {
+        const res = await fetch('/api/generate-cv', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': adminToken,
+          },
+          body: JSON.stringify({
+            jobDescription: description,
+            model: modelSelect.value,
+          }),
+        });
+
+        if (res.status === 401) {
+          sessionStorage.removeItem('adminToken');
+          showGenError('Session expired. Please sign in again.');
+          logout();
+          return;
+        }
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          showGenError(data.error || `Server error: ${res.status}`);
+          return;
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6).trim();
+            if (data === '[DONE]') break;
+            try {
+              const json = JSON.parse(data);
+              if (json.error) { showGenError(json.error); return; }
+              const delta = json.choices?.[0]?.delta?.content ?? '';
+              rawCvText += delta;
+              cvRendered.innerHTML = marked.parse(rawCvText);
+              cvRendered.scrollTop = cvRendered.scrollHeight;
+            } catch {}
+          }
+        }
+      } catch (err) {
+        showGenError('Connection error. Please try again.');
+      } finally {
+        cvRendered.classList.remove('streaming');
+        generateBtn.disabled = false;
+        generateBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Generate CV';
+      }
+    }
+
+    function showGenError(msg) {
+      genError.textContent = msg;
+      genError.classList.add('visible');
+      outputPlaceholder.style.display = '';
+      cvOutput.classList.remove('visible');
+    }
+
+    // ── Copy & Download ────────────────────────────────────────────────────
+    copyBtn.addEventListener('click', async () => {
+      if (!rawCvText) return;
+      try {
+        await navigator.clipboard.writeText(rawCvText);
+        showToast('Copied to clipboard');
+      } catch {
+        showToast('Copy failed — try selecting and copying manually');
+      }
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (!rawCvText) return;
+      const blob = new Blob([rawCvText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'richard-awe-cv.txt';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // ── Toast ──────────────────────────────────────────────────────────────
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+  </script>
+</body>
+</html>

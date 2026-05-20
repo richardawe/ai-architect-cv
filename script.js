@@ -107,3 +107,132 @@ document.querySelectorAll('#hero .reveal').forEach((el, i) => {
   // Force visible immediately for hero (above the fold)
   setTimeout(() => el.classList.add('visible'), 50 + i * 120);
 });
+
+/* ── Chat Widget ─────────────────────────────────────────────────────────── */
+(function () {
+  const trigger      = document.getElementById('chatTrigger');
+  const panel        = document.getElementById('chatPanel');
+  const closeBtn     = document.getElementById('chatClose');
+  const messages     = document.getElementById('chatMessages');
+  const form         = document.getElementById('chatForm');
+  const input        = document.getElementById('chatInput');
+  const sendBtn      = document.getElementById('chatSend');
+  const suggestions  = document.getElementById('chatSuggestions');
+
+  let history = [];
+  let busy    = false;
+
+  function openChat() {
+    panel.classList.add('open');
+    panel.setAttribute('aria-hidden', 'false');
+    trigger.classList.add('hidden');
+    input.focus();
+  }
+
+  function closeChat() {
+    panel.classList.remove('open');
+    panel.setAttribute('aria-hidden', 'true');
+    trigger.classList.remove('hidden');
+  }
+
+  trigger.addEventListener('click', openChat);
+  closeBtn.addEventListener('click', closeChat);
+
+  // Dismiss suggestions once user has interacted
+  function hideSuggestions() {
+    if (suggestions) suggestions.style.display = 'none';
+  }
+
+  document.querySelectorAll('.chat-suggest').forEach(btn => {
+    btn.addEventListener('click', () => {
+      input.value = btn.textContent;
+      hideSuggestions();
+      form.dispatchEvent(new Event('submit', { bubbles: true }));
+    });
+  });
+
+  function appendMsg(text, role) {
+    const div = document.createElement('div');
+    div.className = `chat-msg chat-msg-${role}`;
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    return div;
+  }
+
+  async function sendMessage(text) {
+    if (busy) return;
+    busy = true;
+    input.disabled = true;
+    sendBtn.disabled = true;
+
+    hideSuggestions();
+    appendMsg(text, 'user');
+    history.push({ role: 'user', content: text });
+
+    const assistantEl = appendMsg('', 'assistant');
+    assistantEl.classList.add('typing');
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, history: history.slice(-8) }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        assistantEl.textContent = data.error || 'Something went wrong. Please try again.';
+        assistantEl.classList.remove('typing');
+        history.pop();
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let full = '';
+      assistantEl.classList.remove('typing');
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() ?? '';
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue;
+          const data = line.slice(6).trim();
+          if (data === '[DONE]') break;
+          try {
+            const json = JSON.parse(data);
+            if (json.error) { assistantEl.textContent = json.error; return; }
+            const delta = json.choices?.[0]?.delta?.content ?? '';
+            full += delta;
+            assistantEl.textContent = full;
+            messages.scrollTop = messages.scrollHeight;
+          } catch {}
+        }
+      }
+
+      history.push({ role: 'assistant', content: full });
+    } catch {
+      assistantEl.classList.remove('typing');
+      assistantEl.textContent = 'Connection error — is the server running?';
+      history.pop();
+    } finally {
+      busy = false;
+      input.disabled = false;
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    sendMessage(text);
+  });
+}());
