@@ -561,6 +561,12 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
         </button>
       </form>
+      <!-- shown only when no API key is configured; lets the owner activate chat inline -->
+      <div class="chat-setup-row" id="chatSetupRow" style="display:none">
+        <input type="password" class="chat-setup-input" id="chatSetupKey"
+               placeholder="Paste OpenRouter API key to enable chat…" autocomplete="off" />
+        <button class="chat-setup-btn" id="chatSetupBtn">Enable</button>
+      </div>
     </div>
     <button class="chat-trigger" id="chatTrigger" aria-label="Ask about Richard">
       <svg class="chat-trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>

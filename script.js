@@ -140,9 +140,29 @@ BACKGROUND: Lead Business Analyst at Fitch Ratings (Mar 2025–present) · Produ
   const input       = document.getElementById('chatInput');
   const sendBtn     = document.getElementById('chatSend');
   const suggestions = document.getElementById('chatSuggestions');
+  const setupRow    = document.getElementById('chatSetupRow');
+  const setupKey    = document.getElementById('chatSetupKey');
+  const setupBtn    = document.getElementById('chatSetupBtn');
 
   let history = [];
   let busy    = false;
+
+  // Show the inline key setup row when no key is available
+  if (!CHAT_KEY && setupRow) setupRow.style.display = 'flex';
+
+  // Owner enters key directly in the chat panel — saves to localStorage and reloads
+  if (setupBtn) {
+    setupBtn.addEventListener('click', () => {
+      const key = (setupKey.value || '').trim();
+      if (!key) return;
+      localStorage.setItem('ra_openrouter_key', key);
+      localStorage.setItem('ra_chat_model', 'openai/gpt-oss-120b:free');
+      location.reload();
+    });
+    setupKey.addEventListener('keydown', e => {
+      if (e.key === 'Enter') setupBtn.click();
+    });
+  }
 
   function openChat() {
     panel.classList.add('open');
@@ -196,7 +216,8 @@ BACKGROUND: Lead Business Analyst at Fitch Ratings (Mar 2025–present) · Produ
 
     if (!CHAT_KEY) {
       assistantEl.classList.remove('typing');
-      assistantEl.textContent = "I'm not available to chat right now, but Richard would love to hear from you! Reach him at richard3d7@gmail.com or browse github.com/richardawe.";
+      assistantEl.textContent = "Chat isn't active yet — use the field below to paste your OpenRouter key and enable it instantly.";
+      if (setupRow) setupRow.style.display = 'flex';
       history.pop();
       busy = false; input.disabled = false; sendBtn.disabled = false;
       return;

@@ -793,6 +793,43 @@ footer {
 .chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
 .chat-send svg { width: 15px; height: 15px; }
 
+.chat-setup-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px 12px;
+  border-top: 1px dashed var(--border);
+  background: var(--bg3);
+}
+.chat-setup-input {
+  flex: 1;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 11px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.chat-setup-input:focus { border-color: var(--accent); }
+.chat-setup-input::placeholder { color: var(--text-faint); font-family: var(--sans); }
+.chat-setup-btn {
+  background: rgba(59,130,246,0.15);
+  border: 1px solid rgba(59,130,246,0.3);
+  border-radius: 8px;
+  color: var(--accent2);
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 7px 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.chat-setup-btn:hover { background: rgba(59,130,246,0.25); }
+
 .chat-footer-note {
   text-align: center;
   font-size: 0.7rem;
