@@ -10,13 +10,13 @@ on:
       model:
         description: "OpenRouter model"
         required: false
-        default: "meta-llama/llama-3.3-70b-instruct:free"
+        default: "openai/gpt-oss-120b:free"
         type: choice
         options:
+          - "openai/gpt-oss-120b:free"
           - "meta-llama/llama-3.3-70b-instruct:free"
           - "openai/gpt-4o-mini"
           - "anthropic/claude-3-haiku"
-          - "google/gemini-flash-1.5"
 
 jobs:
   generate:

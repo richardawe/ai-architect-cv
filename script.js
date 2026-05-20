@@ -123,7 +123,9 @@ EARLIER WORK: AI Metrics Intelligence Platform · AI Agent Workflow System (5-st
 
 BACKGROUND: Lead Business Analyst at Fitch Ratings (Mar 2025–present) · Product Owner at 3D7 Technologies (2024) · Lead BA at RAC Limited (2023–2024) · Lead BA at HMRC (2022–2023) · Lead BA at European Central Bank (2020–2021) · Lead BA at Lloyds Banking Group (2019–2020) · Senior BA at HSBC (2015–2019).`;
 
-  const cfg = window.CHAT_CONFIG;
+  const _raw = window.CHAT_CONFIG || {};
+  const cfg  = Object.keys(_raw).length ? _raw : null;
+  const CHAT_MODEL = (cfg && cfg.model) || 'openai/gpt-oss-120b:free';
 
   const trigger     = document.getElementById('chatTrigger');
   const panel       = document.getElementById('chatPanel');
@@ -206,7 +208,7 @@ BACKGROUND: Lead Business Analyst at Fitch Ratings (Mar 2025–present) · Produ
           'X-Title': 'Richard Awe CV',
         },
         body: JSON.stringify({
-          model: cfg.model,
+          model: CHAT_MODEL,
           stream: true,
           max_tokens: 600,
           temperature: 0.7,
