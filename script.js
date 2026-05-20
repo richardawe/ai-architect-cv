@@ -123,9 +123,14 @@ EARLIER WORK: AI Metrics Intelligence Platform · AI Agent Workflow System (5-st
 
 BACKGROUND: Lead Business Analyst at Fitch Ratings (Mar 2025–present) · Product Owner at 3D7 Technologies (2024) · Lead BA at RAC Limited (2023–2024) · Lead BA at HMRC (2022–2023) · Lead BA at European Central Bank (2020–2021) · Lead BA at Lloyds Banking Group (2019–2020) · Senior BA at HSBC (2015–2019).`;
 
-  const _raw = window.CHAT_CONFIG || {};
-  const cfg  = Object.keys(_raw).length ? _raw : null;
-  const CHAT_MODEL = (cfg && cfg.model) || 'openai/gpt-oss-120b:free';
+  // Key resolution order:
+  //   1. deploy.yml injects chat-config.js at build time (preferred)
+  //   2. owner stores key via admin page → localStorage fallback (works without a deploy step)
+  const _deploy   = window.CHAT_CONFIG || {};
+  const CHAT_KEY   = _deploy.apiKey   || localStorage.getItem('ra_openrouter_key') || '';
+  const CHAT_MODEL = _deploy.model    || localStorage.getItem('ra_chat_model')     || 'openai/gpt-oss-120b:free';
+  const CHAT_BASE  = _deploy.baseUrl  || 'https://openrouter.ai/api/v1';
+  const CHAT_REF   = _deploy.referer  || window.location.origin;
 
   const trigger     = document.getElementById('chatTrigger');
   const panel       = document.getElementById('chatPanel');
@@ -189,22 +194,23 @@ BACKGROUND: Lead Business Analyst at Fitch Ratings (Mar 2025–present) · Produ
     const assistantEl = appendMsg('', 'assistant');
     assistantEl.classList.add('typing');
 
-    if (!cfg || !cfg.apiKey) {
+    if (!CHAT_KEY) {
       assistantEl.classList.remove('typing');
-      assistantEl.textContent = 'Chat is not configured on this deployment. Please set OPENROUTER_API_KEY in the repository secrets.';
+      assistantEl.textContent = "I'm not available to chat right now, but Richard would love to hear from you! Reach him at richard3d7@gmail.com or browse github.com/richardawe.";
       history.pop();
       busy = false; input.disabled = false; sendBtn.disabled = false;
       return;
     }
 
     try {
-      // Call OpenRouter directly from the browser — key injected at deploy time by deploy.yml
-      const res = await fetch(`${cfg.baseUrl}/chat/completions`, {
+      // Call OpenRouter directly from the browser.
+      // Key source: deploy.yml build injection (chat-config.js) or localStorage fallback set via /admin.
+      const res = await fetch(`${CHAT_BASE}/chat/completions`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${cfg.apiKey}`,
+          'Authorization': `Bearer ${CHAT_KEY}`,
           'Content-Type': 'application/json',
-          'HTTP-Referer': cfg.referer || window.location.origin,
+          'HTTP-Referer': CHAT_REF,
           'X-Title': 'Richard Awe CV',
         },
         body: JSON.stringify({

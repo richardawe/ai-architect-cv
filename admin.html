@@ -212,26 +212,33 @@
       <div class="steps">
         <div class="step">
           <span class="step-num">1</span>
-          <span>Create a GitHub Personal Access Token at <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens</a> with the <code>workflow</code> scope (classic token).</span>
+          <span>Get your <strong>OpenRouter API key</strong> at <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a>. This powers both the chat widget and CV generation. Also add it as repo secret <code>OPENROUTER_API_KEY</code> in <a href="https://github.com/richardawe/ai-architect-cv/settings/secrets/actions" target="_blank">Settings → Secrets</a> for the deploy workflow.</span>
         </div>
         <div class="step">
           <span class="step-num">2</span>
-          <span>Make sure <code>OPENROUTER_API_KEY</code> is set as a repository secret in <a href="https://github.com/richardawe/ai-architect-cv/settings/secrets/actions" target="_blank">Settings → Secrets</a>.</span>
+          <span>Create a GitHub Personal Access Token at <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens</a> with the <code>workflow</code> scope to trigger CV generation from this page.</span>
         </div>
         <div class="step">
           <span class="step-num">3</span>
-          <span>Paste your token below. It stays in <code>sessionStorage</code> — it never leaves your browser.</span>
+          <span>Paste both below. The OpenRouter key is saved to <code>localStorage</code> so the chat widget on the main page works immediately on this device. The GitHub token is saved to <code>sessionStorage</code> only.</span>
         </div>
       </div>
 
       <div class="field">
-        <label for="tokenInput">GitHub Personal Access Token</label>
+        <label for="orKeyInput">OpenRouter API Key</label>
+        <input type="password" id="orKeyInput" placeholder="sk-or-v1-xxxxxxxxxxxxxxxxxxxx"
+               style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:11px 14px;outline:none;transition:border-color 0.2s"
+               autocomplete="off" />
+      </div>
+
+      <div class="field">
+        <label for="tokenInput">GitHub Personal Access Token <span style="font-size:0.7rem;color:var(--text-faint);font-weight:400;text-transform:none">(optional — only needed to trigger CV generation)</span></label>
         <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
                style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:11px 14px;outline:none;transition:border-color 0.2s"
                autocomplete="off" />
       </div>
       <div id="setupError" class="error-msg"></div>
-      <button class="btn btn-primary" id="saveTokenBtn">Continue →</button>
+      <button class="btn btn-primary" id="saveTokenBtn">Save & Continue →</button>
     </div>
   </div>
 
@@ -314,12 +321,13 @@
     const RAW_CV_URL = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/cv-output/latest.md`;
 
     // ── State ──────────────────────────────────────────────────────────────
-    let ghToken = sessionStorage.getItem('gh_admin_token') || '';
+    let ghToken  = sessionStorage.getItem('gh_admin_token') || '';
     let rawCvText = '';
 
     // ── DOM ────────────────────────────────────────────────────────────────
     const setupScreen = document.getElementById('setupScreen');
     const dashboard   = document.getElementById('dashboard');
+    const orKeyInput  = document.getElementById('orKeyInput');
     const tokenInput  = document.getElementById('tokenInput');
     const saveTokenBtn= document.getElementById('saveTokenBtn');
     const setupError  = document.getElementById('setupError');
@@ -340,31 +348,50 @@
     const toast       = document.getElementById('toast');
 
     // ── Init ───────────────────────────────────────────────────────────────
-    if (ghToken) showDashboard();
+    if (ghToken || localStorage.getItem('ra_openrouter_key')) showDashboard();
 
-    // ── Token setup ────────────────────────────────────────────────────────
-    async function verifyAndSaveToken() {
-      const tok = tokenInput.value.trim();
-      if (!tok) return;
+    // ── Setup ──────────────────────────────────────────────────────────────
+    async function saveAndContinue() {
+      const orKey = orKeyInput.value.trim();
+      const ghTok = tokenInput.value.trim();
+
+      if (!orKey && !ghTok) {
+        setupError.textContent = 'Enter at least your OpenRouter API key to continue.';
+        setupError.classList.add('visible');
+        return;
+      }
+
       setupError.classList.remove('visible');
       saveTokenBtn.disabled = true;
-      saveTokenBtn.textContent = 'Checking…';
-      try {
-        // Verify by calling user endpoint
-        const res = await fetch('https://api.github.com/user', {
-          headers: { Authorization: `token ${tok}`, Accept: 'application/vnd.github.v3+json' }
-        });
-        if (!res.ok) throw new Error(`GitHub returned ${res.status}`);
-        ghToken = tok;
-        sessionStorage.setItem('gh_admin_token', tok);
-        showDashboard();
-      } catch (e) {
-        setupError.textContent = `Token invalid or no network: ${e.message}`;
-        setupError.classList.add('visible');
-      } finally {
-        saveTokenBtn.disabled = false;
-        saveTokenBtn.textContent = 'Continue →';
+      saveTokenBtn.textContent = 'Saving…';
+
+      // Save OpenRouter key to localStorage — script.js reads this as fallback
+      if (orKey) {
+        localStorage.setItem('ra_openrouter_key', orKey);
+        localStorage.setItem('ra_chat_model', 'openai/gpt-oss-120b:free');
       }
+
+      // Verify GitHub token if provided
+      if (ghTok) {
+        try {
+          const res = await fetch('https://api.github.com/user', {
+            headers: { Authorization: `token ${ghTok}`, Accept: 'application/vnd.github.v3+json' }
+          });
+          if (!res.ok) throw new Error(`GitHub returned ${res.status} — check the token scope includes "workflow"`);
+          ghToken = ghTok;
+          sessionStorage.setItem('gh_admin_token', ghTok);
+        } catch (e) {
+          setupError.textContent = `GitHub token error: ${e.message}`;
+          setupError.classList.add('visible');
+          saveTokenBtn.disabled = false;
+          saveTokenBtn.textContent = 'Save & Continue →';
+          return;
+        }
+      }
+
+      saveTokenBtn.disabled = false;
+      saveTokenBtn.textContent = 'Save & Continue →';
+      showDashboard();
     }
 
     function showDashboard() {
@@ -373,15 +400,19 @@
       clearBtn.style.display = 'block';
     }
 
-    saveTokenBtn.addEventListener('click', verifyAndSaveToken);
-    tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') verifyAndSaveToken(); });
+    saveTokenBtn.addEventListener('click', saveAndContinue);
+    tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveAndContinue(); });
+    orKeyInput.addEventListener('keydown', e => { if (e.key === 'Enter') saveAndContinue(); });
 
     clearBtn.addEventListener('click', () => {
       sessionStorage.removeItem('gh_admin_token');
+      localStorage.removeItem('ra_openrouter_key');
+      localStorage.removeItem('ra_chat_model');
       ghToken = '';
       setupScreen.style.display = '';
       dashboard.classList.remove('visible');
       clearBtn.style.display = 'none';
+      orKeyInput.value = '';
       tokenInput.value = '';
     });
 
@@ -395,6 +426,10 @@
       const desc = jobDesc.value.trim();
       if (!desc || desc.length < 50) {
         showGenError('Please paste a full job description (at least 50 characters).');
+        return;
+      }
+      if (!ghToken) {
+        showGenError('A GitHub token is required to trigger the workflow. Go back to setup and add one.');
         return;
       }
       genError.classList.remove('visible');
