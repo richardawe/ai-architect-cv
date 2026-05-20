@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RA. Admin — CV Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+  <style>
+    :root {
+      --bg:         #080b12;
+      --bg2:        #0d1117;
+      --bg3:        #111827;
+      --border:     rgba(255,255,255,0.07);
+      --border-hi:  rgba(255,255,255,0.14);
+      --text:       #e2e8f0;
+      --text-dim:   #8892a4;
+      --text-faint: #4b5563;
+      --accent:     #3b82f6;
+      --accent2:    #60a5fa;
+      --success:    #10b981;
+      --warn:       #f59e0b;
+      --danger:     #ef4444;
+      --sans:       'Inter', sans-serif;
+      --mono:       'JetBrains Mono', monospace;
+      --radius:     12px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 32px; border-bottom: 1px solid var(--border);
+      background: var(--bg2); position: sticky; top: 0; z-index: 10;
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .logo { font-family: var(--mono); font-size: 1rem; font-weight: 500; }
+    .logo .dot { color: var(--accent); }
+    .badge {
+      font-size: 0.68rem; color: var(--text-dim); background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px;
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    #clearBtn {
+      background: transparent; border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text-dim); font-family: var(--sans); font-size: 0.8rem;
+      padding: 6px 14px; cursor: pointer; transition: border-color 0.2s, color 0.2s;
+      display: none;
+    }
+    #clearBtn:hover { border-color: var(--border-hi); color: var(--text); }
+
+    /* ── Setup screen ────────────────────────────────────────────────────── */
+    #setupScreen {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      padding: 32px 16px;
+    }
+    .setup-card {
+      background: var(--bg2); border: 1px solid var(--border); border-radius: 18px;
+      padding: 48px 40px; width: 100%; max-width: 480px;
+      display: flex; flex-direction: column; gap: 22px;
+    }
+    .setup-card h2 { font-size: 1.4rem; font-weight: 600; letter-spacing: -0.03em; }
+    .setup-card p { font-size: 0.875rem; color: var(--text-dim); line-height: 1.6; }
+    .setup-card a { color: var(--accent2); text-decoration: underline; }
+    .steps { display: flex; flex-direction: column; gap: 10px; }
+    .step {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; font-size: 0.825rem; color: var(--text-dim); line-height: 1.5;
+    }
+    .step-num {
+      background: rgba(59,130,246,0.15); color: var(--accent2); border-radius: 6px;
+      padding: 2px 8px; font-size: 0.75rem; font-weight: 600; flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .step code { font-family: var(--mono); font-size: 0.78rem; color: var(--text); background: rgba(255,255,255,0.05); padding: 1px 5px; border-radius: 4px; }
+
+    /* ── Dashboard ───────────────────────────────────────────────────────── */
+    #dashboard {
+      display: none; flex: 1; flex-direction: column;
+      max-width: 1120px; margin: 0 auto; width: 100%;
+      padding: 40px 32px 64px; gap: 28px;
+    }
+    #dashboard.visible { display: flex; }
+    .dash-intro h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.04em; margin-bottom: 8px; }
+    .dash-intro p { color: var(--text-dim); font-size: 0.875rem; line-height: 1.6; }
+    .dash-intro strong { color: var(--text); }
+
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    @media (max-width: 820px) { .columns { grid-template-columns: 1fr; } }
+
+    .panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+    .panel-head {
+      padding: 15px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .panel-head h3 { font-size: 0.875rem; font-weight: 600; }
+    .panel-chip {
+      font-size: 0.68rem; padding: 2px 8px; border-radius: 20px;
+      background: rgba(59,130,246,0.1); color: var(--accent2);
+      border: 1px solid rgba(59,130,246,0.18);
+    }
+    .panel-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+    /* ── Form elements ───────────────────────────────────────────────────── */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 0.75rem; font-weight: 500; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em; }
+    textarea, select {
+      width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      color: var(--text); font-family: var(--sans); font-size: 0.875rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    textarea { padding: 13px 15px; line-height: 1.6; resize: none; }
+    textarea:focus, select:focus { border-color: var(--accent); }
+    select { padding: 9px 12px; cursor: pointer; }
+    .char-hint { font-size: 0.73rem; color: var(--text-faint); text-align: right; }
+
+    /* ── Buttons ─────────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 11px 20px; border-radius: 10px; font-family: var(--sans);
+      font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none;
+    }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+    .btn-outline:hover { border-color: var(--border-hi); color: var(--text); }
+    .btn-sm { padding: 7px 13px; font-size: 0.8rem; border-radius: 8px; }
+    .btn-ghost { background: none; border: none; cursor: pointer; color: var(--text-faint); font-family: var(--sans); font-size: 0.8rem; padding: 0; text-decoration: underline; }
+    .btn-ghost:hover { color: var(--text-dim); }
+
+    /* ── Status bar ──────────────────────────────────────────────────────── */
+    .status-bar {
+      display: none; align-items: center; gap: 10px;
+      background: var(--bg3); border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; font-size: 0.82rem;
+    }
+    .status-bar.visible { display: flex; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.running { background: var(--warn); animation: pulse-dot 1.2s infinite; }
+    .status-dot.success { background: var(--success); }
+    .status-dot.failed  { background: var(--danger); }
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── Error ───────────────────────────────────────────────────────────── */
+    .error-msg {
+      display: none; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2);
+      color: #fca5a5; border-radius: 8px; padding: 10px 14px; font-size: 0.83rem;
+    }
+    .error-msg.visible { display: block; }
+
+    /* ── CV output ───────────────────────────────────────────────────────── */
+    .placeholder {
+      color: var(--text-faint); font-size: 0.875rem; text-align: center;
+      padding: 56px 24px; line-height: 1.6;
+    }
+    .placeholder .icon { font-size: 1.8rem; display: block; margin-bottom: 12px; }
+    #cvOutput { display: none; flex-direction: column; gap: 14px; }
+    #cvOutput.visible { display: flex; }
+    .cv-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .cv-rendered {
+      background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 24px; font-size: 0.875rem; line-height: 1.75; overflow-y: auto; max-height: 620px;
+    }
+    .cv-rendered h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 4px; }
+    .cv-rendered h2 { font-size: 0.95rem; font-weight: 600; color: var(--accent2); border-bottom: 1px solid var(--border); padding-bottom: 5px; margin: 18px 0 9px; }
+    .cv-rendered h3 { font-size: 0.875rem; font-weight: 600; margin: 12px 0 5px; }
+    .cv-rendered p { margin-bottom: 9px; color: var(--text-dim); }
+    .cv-rendered strong { color: var(--text); }
+    .cv-rendered ul { padding-left: 16px; margin-bottom: 9px; }
+    .cv-rendered li { margin-bottom: 3px; color: var(--text-dim); }
+    .cv-rendered hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+    .cv-loading::after { content: '▋'; color: var(--accent); animation: blink 0.8s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ── Toast ───────────────────────────────────────────────────────────── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(16px);
+      background: var(--bg3); border: 1px solid var(--border-hi); color: var(--text);
+      border-radius: 10px; padding: 9px 18px; font-size: 0.83rem;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s, transform 0.25s; z-index: 99;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Workflow link ────────────────────────────────────────────────────── */
+    .workflow-link { font-size: 0.78rem; color: var(--text-faint); }
+    .workflow-link a { color: var(--accent2); }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-left">
+      <span class="logo">RA<span class="dot">.</span></span>
+      <span class="badge">Admin</span>
+    </div>
+    <button id="clearBtn">Clear token</button>
+  </header>
+
+  <!-- ── Setup / Token screen ───────────────────────────────────────────── -->
+  <div id="setupScreen">
+    <div class="setup-card">
+      <div>
+        <h2>CV Generator</h2>
+        <p style="margin-top:8px">Paste a job description to generate a tailored CV via GitHub Actions — the same LLM setup as the EU261 project. This page triggers the <code style="font-family:var(--mono);font-size:0.8rem">generate-cv.yml</code> workflow in your repo.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <span class="step-num">1</span>
+          <span>Create a GitHub Personal Access Token at <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens</a> with the <code>workflow</code> scope (classic token).</span>
+        </div>
+        <div class="step">
+          <span class="step-num">2</span>
+          <span>Make sure <code>OPENROUTER_API_KEY</code> is set as a repository secret in <a href="https://github.com/richardawe/ai-architect-cv/settings/secrets/actions" target="_blank">Settings → Secrets</a>.</span>
+        </div>
+        <div class="step">
+          <span class="step-num">3</span>
+          <span>Paste your token below. It stays in <code>sessionStorage</code> — it never leaves your browser.</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="tokenInput">GitHub Personal Access Token</label>
+        <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+               style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:var(--mono);font-size:0.82rem;padding:11px 14px;outline:none;transition:border-color 0.2s"
+               autocomplete="off" />
+      </div>
+      <div id="setupError" class="error-msg"></div>
+      <button class="btn btn-primary" id="saveTokenBtn">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── Dashboard ─────────────────────────────────────────────────────── -->
+  <div id="dashboard">
+    <div class="dash-intro">
+      <h2>Tailored CV Generator</h2>
+      <p>Paste any job description. The <strong>Generate Tailored CV</strong> GitHub Actions workflow runs Python + OpenRouter (EU261 pattern), commits the result to <code style="font-family:var(--mono);font-size:0.8rem">cv-output/latest.md</code>, and it appears below.</p>
+    </div>
+
+    <div class="columns">
+      <!-- Input -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Job Description</h3>
+          <span class="panel-chip">Input</span>
+        </div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="jobDesc">Paste the full job description</label>
+            <textarea id="jobDesc" rows="16"
+              placeholder="Paste the full job description here — role title, responsibilities, requirements, company context. The more detail, the better the tailoring."></textarea>
+            <div class="char-hint"><span id="charCount">0</span> / 5000 chars</div>
+          </div>
+          <div class="field">
+            <label for="modelSelect">Model</label>
+            <select id="modelSelect">
+              <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (free)</option>
+              <option value="openai/gpt-4o-mini">GPT-4o Mini</option>
+              <option value="anthropic/claude-3-haiku">Claude 3 Haiku</option>
+              <option value="google/gemini-flash-1.5">Gemini Flash 1.5</option>
+            </select>
+          </div>
+          <div id="genError" class="error-msg"></div>
+          <div id="statusBar" class="status-bar">
+            <div class="status-dot running" id="statusDot"></div>
+            <span id="statusText">Triggering workflow…</span>
+          </div>
+          <button class="btn btn-primary" id="generateBtn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Generate CV
+          </button>
+          <div class="workflow-link">
+            Runs via <a href="https://github.com/richardawe/ai-architect-cv/actions/workflows/generate-cv.yml" target="_blank">generate-cv.yml ↗</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Output -->
+      <div class="panel">
+        <div class="panel-head">
+          <h3>Generated CV</h3>
+          <span class="panel-chip">Output</span>
+        </div>
+        <div class="panel-body">
+          <div id="outputPlaceholder" class="placeholder">
+            <span class="icon">✦</span>
+            Your tailored CV will stream in here once the<br/>GitHub Actions workflow completes (~60–90 s).
+          </div>
+          <div id="cvOutput">
+            <div class="cv-actions">
+              <button class="btn btn-outline btn-sm" id="copyBtn">Copy text</button>
+              <button class="btn btn-outline btn-sm" id="downloadBtn">Download .md</button>
+              <a class="btn btn-outline btn-sm" id="rawLink"
+                 href="https://raw.githubusercontent.com/richardawe/ai-architect-cv/main/cv-output/latest.md"
+                 target="_blank">Raw file ↗</a>
+            </div>
+            <div class="cv-rendered" id="cvRendered"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const OWNER = 'richardawe';
+    const REPO  = 'ai-architect-cv';
+    const RAW_CV_URL = `https://raw.githubusercontent.com/${OWNER}/${REPO}/main/cv-output/latest.md`;
+
+    // ── State ──────────────────────────────────────────────────────────────
+    let ghToken = sessionStorage.getItem('gh_admin_token') || '';
+    let rawCvText = '';
+
+    // ── DOM ────────────────────────────────────────────────────────────────
+    const setupScreen = document.getElementById('setupScreen');
+    const dashboard   = document.getElementById('dashboard');
+    const tokenInput  = document.getElementById('tokenInput');
+    const saveTokenBtn= document.getElementById('saveTokenBtn');
+    const setupError  = document.getElementById('setupError');
+    const clearBtn    = document.getElementById('clearBtn');
+    const jobDesc     = document.getElementById('jobDesc');
+    const charCount   = document.getElementById('charCount');
+    const modelSelect = document.getElementById('modelSelect');
+    const generateBtn = document.getElementById('generateBtn');
+    const genError    = document.getElementById('genError');
+    const statusBar   = document.getElementById('statusBar');
+    const statusDot   = document.getElementById('statusDot');
+    const statusText  = document.getElementById('statusText');
+    const outputPH    = document.getElementById('outputPlaceholder');
+    const cvOutput    = document.getElementById('cvOutput');
+    const cvRendered  = document.getElementById('cvRendered');
+    const copyBtn     = document.getElementById('copyBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const toast       = document.getElementById('toast');
+
+    // ── Init ───────────────────────────────────────────────────────────────
+    if (ghToken) showDashboard();
+
+    // ── Token setup ────────────────────────────────────────────────────────
+    async function verifyAndSaveToken() {
+      const tok = tokenInput.value.trim();
+      if (!tok) return;
+      setupError.classList.remove('visible');
+      saveTokenBtn.disabled = true;
+      saveTokenBtn.textContent = 'Checking…';
+      try {
+        // Verify by calling user endpoint
+        const res = await fetch('https://api.github.com/user', {
+          headers: { Authorization: `token ${tok}`, Accept: 'application/vnd.github.v3+json' }
+        });
+        if (!res.ok) throw new Error(`GitHub returned ${res.status}`);
+        ghToken = tok;
+        sessionStorage.setItem('gh_admin_token', tok);
+        showDashboard();
+      } catch (e) {
+        setupError.textContent = `Token invalid or no network: ${e.message}`;
+        setupError.classList.add('visible');
+      } finally {
+        saveTokenBtn.disabled = false;
+        saveTokenBtn.textContent = 'Continue →';
+      }
+    }
+
+    function showDashboard() {
+      setupScreen.style.display = 'none';
+      dashboard.classList.add('visible');
+      clearBtn.style.display = 'block';
+    }
+
+    saveTokenBtn.addEventListener('click', verifyAndSaveToken);
+    tokenInput.addEventListener('keydown', e => { if (e.key === 'Enter') verifyAndSaveToken(); });
+
+    clearBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('gh_admin_token');
+      ghToken = '';
+      setupScreen.style.display = '';
+      dashboard.classList.remove('visible');
+      clearBtn.style.display = 'none';
+      tokenInput.value = '';
+    });
+
+    // ── Char counter ───────────────────────────────────────────────────────
+    jobDesc.addEventListener('input', () => { charCount.textContent = jobDesc.value.length; });
+
+    // ── Generate ───────────────────────────────────────────────────────────
+    generateBtn.addEventListener('click', runGenerate);
+
+    async function runGenerate() {
+      const desc = jobDesc.value.trim();
+      if (!desc || desc.length < 50) {
+        showGenError('Please paste a full job description (at least 50 characters).');
+        return;
+      }
+      genError.classList.remove('visible');
+      generateBtn.disabled = true;
+      generateBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Generating…';
+
+      setStatus('running', 'Dispatching workflow…');
+      outputPH.style.display = '';
+      cvOutput.classList.remove('visible');
+      rawCvText = '';
+
+      const triggerTime = Date.now();
+
+      // 1. Trigger workflow_dispatch
+      try {
+        const dispatchRes = await fetch(
+          `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/generate-cv.yml/dispatches`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `token ${ghToken}`,
+              Accept: 'application/vnd.github.v3+json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              ref: 'main',
+              inputs: {
+                job_description: desc.slice(0, 5000),
+                model: modelSelect.value,
+              },
+            }),
+          }
+        );
+        if (dispatchRes.status === 404) {
+          showGenError('Workflow not found. Make sure generate-cv.yml is on the main branch and the repo is correct.');
+          return;
+        }
+        if (dispatchRes.status === 422) {
+          showGenError('Workflow dispatch failed (422). Ensure the branch is "main" and the workflow file exists.');
+          return;
+        }
+        if (!dispatchRes.ok && dispatchRes.status !== 204) {
+          const body = await dispatchRes.text().catch(() => '');
+          showGenError(`Dispatch failed (${dispatchRes.status}): ${body.slice(0,200)}`);
+          return;
+        }
+      } catch (e) {
+        showGenError(`Network error: ${e.message}`);
+        return;
+      }
+
+      // 2. Poll for workflow completion
+      setStatus('running', 'Workflow queued — waiting for runner to start…');
+      await sleep(8000); // GitHub takes a few seconds to register the run
+
+      const result = await pollWorkflow(triggerTime);
+      if (result !== 'success') {
+        showGenError(result === 'timeout'
+          ? 'Timed out after 10 minutes. Check the Actions tab for details.'
+          : `Workflow ${result}. Check the Actions tab for the error log.`);
+        return;
+      }
+
+      // 3. Fetch the committed CV
+      setStatus('running', 'Workflow complete — fetching generated CV…');
+      await sleep(3000); // let GitHub CDN propagate
+      try {
+        const cvRes = await fetch(`${RAW_CV_URL}?t=${Date.now()}`);
+        if (!cvRes.ok) throw new Error(`HTTP ${cvRes.status}`);
+        rawCvText = await cvRes.text();
+        showCV(rawCvText);
+        setStatus('success', 'CV generated successfully');
+      } catch (e) {
+        showGenError(`Could not fetch generated CV: ${e.message}. Try the Raw file link.`);
+        return;
+      }
+    }
+
+    async function pollWorkflow(triggerTime, timeoutMs = 10 * 60 * 1000) {
+      const start = Date.now();
+      let runId = null;
+
+      while (Date.now() - start < timeoutMs) {
+        await sleep(8000);
+        try {
+          const res = await fetch(
+            `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/generate-cv.yml/runs?per_page=5`,
+            { headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json' } }
+          );
+          if (!res.ok) continue;
+          const data = await res.json();
+
+          for (const run of (data.workflow_runs || [])) {
+            const created = new Date(run.created_at).getTime();
+            if (created < triggerTime - 15_000) continue; // too old
+            runId = run.id;
+
+            if (run.status === 'completed') {
+              return run.conclusion === 'success' ? 'success' : `failed (${run.conclusion})`;
+            }
+            const elapsed = Math.round((Date.now() - created) / 1000);
+            setStatus('running', `Workflow ${run.status} · run #${run.run_number} · ${elapsed}s elapsed`);
+            break;
+          }
+          if (!runId) setStatus('running', 'Waiting for run to appear in the Actions API…');
+        } catch { /* network blip — keep polling */ }
+      }
+      return 'timeout';
+    }
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    function setStatus(type, msg) {
+      statusBar.classList.add('visible');
+      statusDot.className = `status-dot ${type}`;
+      statusText.textContent = msg;
+    }
+
+    function showGenError(msg) {
+      genError.textContent = msg;
+      genError.classList.add('visible');
+      statusBar.classList.remove('visible');
+      generateBtn.disabled = false;
+      generateBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Generate CV';
+    }
+
+    function showCV(md) {
+      outputPH.style.display = 'none';
+      cvOutput.classList.add('visible');
+      cvRendered.innerHTML = marked.parse(md);
+      generateBtn.disabled = false;
+      generateBtn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Generate CV';
+    }
+
+    // ── Copy / Download ────────────────────────────────────────────────────
+    copyBtn.addEventListener('click', async () => {
+      if (!rawCvText) return;
+      try { await navigator.clipboard.writeText(rawCvText); showToast('Copied to clipboard'); }
+      catch { showToast('Select all text in the panel and copy manually'); }
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      if (!rawCvText) return;
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(new Blob([rawCvText], { type: 'text/markdown' })),
+        download: 'richard-awe-cv.md',
+      });
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    // ── Toast ──────────────────────────────────────────────────────────────
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+  </script>
+</body>
+</html>

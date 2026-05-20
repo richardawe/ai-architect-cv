@@ -1,0 +1,51 @@
+name: Generate Tailored CV
+
+on:
+  workflow_dispatch:
+    inputs:
+      job_description:
+        description: "Full job description to tailor CV against"
+        required: true
+        type: string
+      model:
+        description: "OpenRouter model"
+        required: false
+        default: "meta-llama/llama-3.3-70b-instruct:free"
+        type: choice
+        options:
+          - "meta-llama/llama-3.3-70b-instruct:free"
+          - "openai/gpt-4o-mini"
+          - "anthropic/claude-3-haiku"
+          - "google/gemini-flash-1.5"
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write                 # needed to commit cv-output/
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Generate CV
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CV_MODEL: ${{ inputs.model }}
+          JOB_DESCRIPTION: ${{ inputs.job_description }}  # passed via env (no shell escaping issues)
+        run: python scripts/generate_cv.py
+
+      - name: Commit generated CV
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add cv-output/
+          git diff --staged --quiet || git commit -m "chore: generate tailored CV [skip ci]"
+          git push
