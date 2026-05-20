@@ -198,7 +198,7 @@ def main() -> None:
         print("ERROR: JOB_DESCRIPTION env var is empty", file=sys.stderr)
         sys.exit(1)
 
-    model = os.environ.get("CV_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
+    model = os.environ.get("CV_MODEL") or "openai/gpt-oss-120b:free"
     print(f"Generating CV with model: {model}", file=sys.stderr)
 
     cv_text = _chat(
