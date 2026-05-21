@@ -275,7 +275,7 @@ BACKGROUND: Lead Business Analyst at Fitch Ratings (Mar 2025–present) · Produ
             const json = JSON.parse(data);
             const delta = json.choices?.[0]?.delta?.content ?? '';
             full += delta;
-            assistantEl.textContent = full;
+            assistantEl.innerHTML = marked.parse(full);
             messages.scrollTop = messages.scrollHeight;
           } catch {}
         }
